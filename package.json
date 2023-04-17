@@ -1,5 +1,5 @@
 {
-  "name": "notification-api",
+  "name": "notifications",
   "version": "0.0.1",
   "description": "",
   "author": "",
@@ -23,9 +23,10 @@
   "dependencies": {
     "@nestjs/common": "^8.0.0",
     "@nestjs/config": "^2.3.1",
-    "@nestjs/core": "^8.0.0",
+    "@nestjs/core": "^9.0.0",
     "@nestjs/microservices": "^9.4.0",
     "@nestjs/platform-express": "^8.0.0",
+    "kafkajs": "^2.2.4",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0"

@@ -4,44 +4,48 @@ import {AppService} from './app.service';
 import {ConfigModule, ConfigService} from "@nestjs/config";
 import {SendNotificationUseCase} from "./use-cases/send.notification.use.case";
 import {ClientProxyFactory, Transport} from "@nestjs/microservices";
-import fs from "fs";
-import path from "path";
+import {readFileSync} from "fs";
+import {resolve} from "path";
 
 @Module({
     imports: [ConfigModule.forRoot(),],
     controllers: [AppController],
     providers: [AppService, SendNotificationUseCase, {
-        provide: 'send-notification',
+        provide: 'KAFKA_CLIENT',
         inject: [ConfigService],
         useFactory: (configService: ConfigService) => ClientProxyFactory.create({
             transport: Transport.KAFKA,
             options: {
                 client: {
-                    clientId: configService.get('Kafka:clientId'),
-                    brokers: configService.get('Kafka:brokers'),
+                    clientId: configService.get('KAFKA_CLIENT_ID'),
+                    brokers: configService.get('KAFKA_BROKERS'),
                     ssl: {
                         rejectUnauthorized: false,
                         ca: [
-                            fs.readFileSync(
-                                path.resolve(
-                                    `${__dirname}/../../../config/kafka/temp_certs/scram-cluster-ca.crt`
+                            readFileSync(
+                                resolve(
+                                    `${__dirname}/../keys/kafka/temp_certs/scram-cluster-ca.crt`
                                 )
                             ),
                         ],
-                        key: fs.readFileSync(
-                            path.resolve(
-                                `${__dirname}/keys/scram-cluster-ca.key`
+                        key: readFileSync(
+                            resolve(
+                                `${__dirname}/../keys/kafka/temp_certs/scram-cluster-ca.key`
                             ),
                             'utf-8'
                         ),
-                        cert: fs.readFileSync(
-                            path.resolve(
-                                `${__dirname}/keys/scram-cluster-ca.p12.pem`
+                        cert: readFileSync(
+                            resolve(
+                                `${__dirname}/../keys/kafka/temp_certs/scram-cluster-ca.p12.pem`
                             ),
                             'utf-8'
                         ),
                     },
-                    sasl: configService.get('Kafka:sasl'),
+                    sasl: {
+                        mechanism: configService.get('KAFKA_SASL_mechanism'),
+                        username: configService.get('KAFKA_SASL_username'),
+                        password: configService.get('KAFKA_SASL_password')
+                    },
                 }
             }
         })

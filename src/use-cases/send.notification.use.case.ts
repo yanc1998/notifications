@@ -1,11 +1,11 @@
-import {Injectable} from "@nestjs/common";
+import {Inject, Injectable} from "@nestjs/common";
 import {CreateNotificationDto} from "../DTO/create.notification.dto";
-import {ClientKafka} from "@nestjs/microservices";
+import {ClientProxy} from "@nestjs/microservices";
 import {firstValueFrom} from "rxjs";
 
 @Injectable()
 export class SendNotificationUseCase {
-    constructor(private readonly clientService: ClientKafka) {
+    constructor(@Inject('KAFKA_CLIENT') private readonly clientService: ClientProxy) {
     }
 
     async execute(dto: CreateNotificationDto) {
